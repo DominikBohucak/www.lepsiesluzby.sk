@@ -6,13 +6,13 @@
                     <span class="sdn-footer__newsletter-heading">
                         Novinky emailom
                         <small class="sdn-footer__newsletter-heading-tooltip"
-                            >(raz mesačne)</small
+                        >(raz mesačne)</small
                         >
                     </span>
                     <div id="newsletter-success" style="display: none">
                         <p>
                             <strong
-                                >Na Váš e-mail sme poslali potvrdzovaciu
+                            >Na Váš e-mail sme poslali potvrdzovaciu
                                 správu.</strong
                             >
                             <br />Ďakujeme za Váš záujem.
@@ -32,14 +32,14 @@
                             <nd-button
                                 class="sdn-footer__newsletter-button"
                                 @click="newsletterSubmit()"
-                                >Prihlásiť</nd-button
+                            >Prihlásiť</nd-button
                             >
                         </div>
                     </form>
                     <div v-else id="newsletter-success">
                         <p>
                             <strong
-                                >Na Váš e-mail sme poslali potvrdzovaciu
+                            >Na Váš e-mail sme poslali potvrdzovaciu
                                 správu.</strong
                             >
                             <br />
@@ -53,13 +53,13 @@
                         <a
                             href="mailto:kontakt@slovensko.digital"
                             class="sdn-footer__link"
-                            >kontakt@slovensko.digital</a
+                        >kontakt@slovensko.digital</a
                         >. Oboznámil(a) som sa s informáciami v sekcii
                         <a
                             href="https://slovensko.digital/ochrana-osobnych-udajov "
                             class="sdn-footer__link"
                             target="_blank"
-                            >Ochrana osobných údajov</a
+                        >Ochrana osobných údajov</a
                         >.
                     </span>
                 </div>
@@ -73,7 +73,7 @@
                         <a
                             href="https://slovensko.digital/dve-percenta#ako-poukazat"
                             class="sdn-footer__link sdn-footer__donate-link"
-                            >Podporte nás</a
+                        >Podporte nás</a
                         >
                     </span>
                 </div>
@@ -82,6 +82,15 @@
         <div class="sdn-footer__bottom-container">
             <div class="govuk-width-container">
                 <div class="sdn-footer__bottom-columns">
+
+                    <div class="sdn-footer__acf-logo">
+                        <div>
+                            <img alt="logo ACF" src="/assets/images/static/acf_logo_white.png" />
+                        </div>
+                        <div class="sdn-footer__acf-logo-text">
+                            Táto aktivita bola bola realizovaná v rámci projektu "Spolu sme Slovensko.Digital" podporeného z programu Active Citizens Fund - Slovakia.
+                        </div>
+                    </div>
                     <div class="sdn-footer__links">
                         <ul>
                             <li
@@ -99,7 +108,7 @@
                             50158635
                             <br />
                             <a href="mailto:kontakt@slovensko.digital"
-                                >kontakt@slovensko.digital</a
+                            >kontakt@slovensko.digital</a
                             >
                         </div>
                     </div>
@@ -175,4 +184,19 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.sdn-footer__acf-logo {
+    width:30%;
+}
+
+.sdn-footer__acf-logo img {
+    height:80px;
+    margin: 10px 0;
+}
+
+.sdn-footer__acf-logo-text {
+    font-size: 12px;
+}
+
+
+</style>
