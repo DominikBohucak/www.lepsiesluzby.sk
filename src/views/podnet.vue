@@ -12,10 +12,27 @@
             <div class="govuk-grid-column-two-thirds">
                 <form id="submit-form" action="/" method="post">
                     <fieldset class="govuk-fieldset">
+
                         <div class="govuk-form-group">
-                            <label class="govuk-label" for="govuk-input-summary"
-                                >Akú situáciu riešite? Krátky popis.</label
+                            <label for="select-issueType" class="govuk-label">Čo chcem urobiť </label>
+
+
+                            <select
+                                class="govuk-select"
+                                @change="selectIssueType"
+                                v-model="form.issueType"
                             >
+                                <option v-for="option in issueTypes" :value="option.id">{{ option.name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="govuk-input-summary" v-if="isBug">
+                                Akú situáciu riešite?
+                            </label>
+                            <label class="govuk-label" for="govuk-input-summary" v-if="!isBug">
+                                Môj nápad sa týka
+                            </label>
                             <input
                                 id="govuk-input-summary"
                                 v-model="form.summary"
@@ -31,9 +48,31 @@
                                 "
                             />
                             <span class="govuk-error-message">
-                                <span class="govuk-visually-hidden"
-                                    >Error:</span
-                                >
+                                <span class="govuk-visually-hidden">Error:</span>
+                                Toto pole je povinné.
+                            </span>
+                        </div>
+
+                        <div class="govuk-form-group" v-if="isBug">
+                            <label for="govuk-input-url" class="govuk-label">
+                                Na akej stránke (skopírujte odkaz url na stránku s problémom)
+                            </label>
+                            <input
+                                id="govuk-input-url"
+                                name="govuk-input-url"
+                                v-model="form.url"
+                                type="url"
+                                class="govuk-input"
+                                :class="{'error-input': !valid.url }"
+                                @blur="
+                                    valid.url = validInput(
+                                        form.url,
+                                        'url'
+                                    )
+                                "
+                            />
+                            <span class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
                                 Toto pole je povinné.
                             </span>
                         </div>
@@ -42,7 +81,14 @@
                             <label
                                 class="govuk-label"
                                 for="govuk-textarea-description"
-                                >Text podnetu</label
+                                v-if="isBug"
+                            >Popíšte Váš problém</label
+                            >
+                            <label
+                                class="govuk-label"
+                                for="govuk-textarea-description"
+                                v-if="!isBug"
+                            >Popis námetu na zlepšenie</label
                             >
                             <textarea
                                 id="govuk-textarea-description"
@@ -52,47 +98,48 @@
                                 name="govuk-textarea-description"
                                 rows="5"
                                 @blur="
-                                    valid.description = validInput(
-                                        form.description,
-                                        'text'
-                                    )
-                                "
+                                  valid.description = validInput(
+                                      form.description,
+                                      'text'
+                                  )
+                              "
                             ></textarea>
                             <span class="govuk-error-message">
                                 <span class="govuk-visually-hidden"
-                                    >Error:</span
+                                >Error:</span
                                 >
                                 Toto pole je povinné.
                             </span>
                         </div>
 
-                        <div class="govuk-form-group">
-                            <label class="govuk-label" for="select-category">
-                                Kategória
-                                <em>(nepovinné)</em>
-                            </label>
-                            <nd-select
-                                v-model="form.categories.persona"
-                                :options="categories.persona"
-                            ></nd-select>
-                            <nd-select
-                                v-if="subCategories.length > 0"
-                                v-model="form.categories.field"
-                                :options="subCategories"
-                            ></nd-select>
-                        </div>
 
                         <div class="govuk-form-group">
-                            <label class="govuk-label" for="file-upload">
-                                Príloha
-                                <em>(nepovinné)</em>
+                            <label class="govuk-label" for="file-upload"  v-if="isBug">
+                                Príloha (jpg. screenshot)
+                            </label>
+                            <label class="govuk-label" for="file-upload"  v-if="!isBug">
+                                Príloha (schéma, podrobnejšie zdôvodnenie námetu, a pod.)
                             </label>
                             <nd-files @file="form.files = $event"></nd-files>
                         </div>
 
+                        <div
+                            class="govuk-form-group"
+                            v-if="isBug"
+                        >
+                            (Vďaka kontaktným údajom môžte rýchlejšie vyriešiť problém)
+                        </div>
+
+                        <div
+                            class="govuk-form-group"
+                            v-if="!isBug"
+                        >
+                            (Vďaka kontaktným údajom môžme spolupracovať so štátnou správou na zlepšení e-služieb)
+                        </div>
+
                         <div class="govuk-form-group">
                             <label class="govuk-label" for="govuk-input-name">
-                                Meno
+                                Meno a priezvisko
                                 <em>(nepovinné)</em>
                             </label>
                             <input
@@ -102,6 +149,32 @@
                                 name="govuk-input-name"
                                 type="text"
                             />
+                        </div>
+
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="govuk-input-email">
+                                Telefónne číslo
+                                <em>(nepovinné)</em>
+                            </label>
+                            <input
+                                id="govuk-input-phone"
+                                v-model="form.phone"
+                                class="govuk-input govuk-!-width-two-thirds"
+                                :class="{ 'error-input': !valid.phone }"
+                                name="govuk-input"
+                                type="text"
+                                @blur="
+                              valid.phone =
+                                (form.phone === '' ||
+                                validInput(form.phone, 'phone'))
+                            "
+                            />
+                            <span class="govuk-error-message">
+                                <span class="govuk-visually-hidden"
+                                >Error:</span
+                                >
+                                 Telefónne číslo je v nesprávnej forme.
+                            </span>
                         </div>
 
                         <div class="govuk-form-group">
@@ -124,11 +197,13 @@
                             />
                             <span class="govuk-error-message">
                                 <span class="govuk-visually-hidden"
-                                    >Error:</span
+                                >Error:</span
                                 >
                                 Email je v nesprávnej forme.
                             </span>
                         </div>
+
+
 
                         <button
                             class="govuk-button"
@@ -152,7 +227,7 @@
                                     <a
                                         href="https://slovensko.digital/ochrana-osobnych-udajov"
                                         target="_blank"
-                                        >GDPR o ochrane osobných údajov</a
+                                    >GDPR o ochrane osobných údajov</a
                                     >.
                                 </label>
                             </div>
@@ -166,6 +241,7 @@
 
 <script>
 import persona from "../jira_personas";
+
 export default {
     data() {
         return {
@@ -173,26 +249,43 @@ export default {
             gdpr: false,
             hasSent: false,
             hasOptions: false,
+            isBug: true,
             form: {
+                issueType: 20,
                 categories: {
                     persona: "Žiadne",
                     field: null,
                 },
+                url: "",
                 summary: "",
                 description: "",
                 files: [],
                 name: "",
+                surname: "",
                 email: "",
+                phone: "",
             },
             valid: {
                 // True at the begining for the scss class
                 description: true,
                 summary: true,
                 email: true,
+                url: true,
+                phone: true,
             },
             categories: {
                 persona,
             },
+            issueTypes: [
+                {
+                    name: "Sťažnosť na fungovanie e-služieb",
+                    id: 20
+                },
+                {
+                    name: "Mám nápad na zlepšenie e-služieb",
+                    id: 19
+                },
+            ],
         };
     },
     computed: {
@@ -220,7 +313,7 @@ export default {
                 let persona = this.form.categories.persona;
                 if (persona && persona !== "Žiadne") {
                     let index = this.categories.persona.findIndex(
-                        (category) => category.value == persona
+                        (category) => category.value === persona
                     );
                     if (this.categories.persona[index].children) {
                         options = options.concat(
@@ -237,16 +330,16 @@ export default {
             // (optional) Wait until recaptcha has been loaded.
             await this.$recaptchaLoaded();
 
-            // Execute reCAPTCHA with action "login".
-            const token = await this.$recaptcha("login");
-
+            // Execute reCAPTCHA with action "issue".
             // Do stuff with the received token.
-            this.token = token;
+            this.token = await this.$recaptcha("issue");
             this.submitForm();
         },
         validInput: function (value, type) {
             let answer = false;
             let regEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            let regPhone = /^[+,0-9]*$/;
+            let regUrl = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
 
             switch (type) {
                 case "email":
@@ -257,6 +350,12 @@ export default {
                         answer = true;
                     }
                     break;
+                case "url":
+                    answer = regUrl.test(value);
+                    break;
+                case "phone":
+                    answer = regPhone.test(value);
+                    break;
                 default:
                     break;
             }
@@ -265,7 +364,7 @@ export default {
         },
         logout: async function () {
             const logoutURL =
-                "https://lepsiesluzby.sk/jira/rest/auth/1/session";
+                "https://lepsiesluzby.atlassian.net/rest/auth/1/session";
             try {
                 await this.axios.delete(logoutURL);
             } catch (error) {
@@ -273,91 +372,54 @@ export default {
             }
         },
         postData: async function (inputData) {
-            const postURL = "https://lepsiesluzby.sk/jira/rest/api/2/issue";
+            const postURL = "https://api.lepsiesluzby.sk/issue/" + inputData.type;
             const config = {
                 headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                    "recaptcha-token": this.token,
+                    "Content-Type": "multipart/form-data",
+                    "Accept": "application/json",
+                    "Recaptcha-Token": this.token,
+                    "Recaptcha-Action": "issue",
                 },
             };
-            try {
-                const post = await this.axios.post(postURL, inputData, config);
-                if (this.form.files && post) {
-                    try {
-                        const attachmentURL =
-                            post.data.self + "/" + "attachments";
-                        const attachmentConfig = {
-                            headers: {
-                                "content-type": "multipart/form-data",
-                                "X-Atlassian-Token": "nocheck",
-                            },
-                        };
-                        const formFiles = new FormData();
 
-                        this.form.files.forEach((file) => {
-                            formFiles.append("file", file);
-                        });
-                        await this.axios.post(
-                            attachmentURL,
-                            formFiles,
-                            attachmentConfig
-                        );
-                        this.logout();
-                        this.$router.push("success");
-                    } catch (error) {
-                        console.log(error);
-                    }
-                } else {
-                    this.logout();
-                    this.$router.push("success");
-                }
+            try {
+                await this.axios.post(postURL, inputData, config);
+                this.$router.push("success");
+                // }
             } catch (error) {
                 this.$router.push({ name: "error", params: { data: error } });
                 console.log(error);
             }
         },
         submitForm: function () {
-            // TODO: Add validation, change customfields to be more general?
             let data = this.form;
-            let cfStr = "customfield_";
 
-            let categoryStr = cfStr + "10204"; // data.categories.persona;
-            const output = {
-                fields: {
-                    project: {
-                        key: "SDM",
-                    },
-                    issuetype: {
-                        name: "Bug",
-                    },
-                    summary: data.summary,
-                    description: data.description,
-                    components: [
-                        {
-                            name: "e-services",
-                        },
-                    ],
-                    customfield_10200: data.email.toLowerCase(),
-                    customfield_10116: data.name,
-                },
-            };
-            if (
-                data.categories.persona &&
-                data.categories.persona !== "Žiadne"
-            ) {
-                if (data.categories.field) {
-                    output.fields[categoryStr] = {
-                        value: data.categories.persona,
-                        child: {
-                            value: data.categories.field,
-                        },
-                    };
-                }
+            const output = new FormData();
+            output.append("summary", data.summary);
+            output.append("description", data.description);
+            output.append("name", data.name);
+            output.append("surname", "");
+            output.append("email", data.email.toLowerCase());
+            output.append("phone", data.phone);
+            output.append("type", "idea");
+            output.type = "idea";
+
+            if (this.isBug) {
+                output.append("url", data.url);
+                output.type = "problem";
+            }
+
+            if (this.form.files.length > 0) {
+                this.form.files.forEach((file) => {
+                    output.append("file", file);
+                });
             }
 
             this.postData(output);
             this.hasSent = true;
+        },
+        selectIssueType: function (event) {
+            this.isBug = (parseInt(event.target.value) === this.issueTypes[0].id);
         },
     },
 };
@@ -384,5 +446,9 @@ export default {
 }
 #govuk-textarea-description {
     margin-bottom: 0;
+}
+.govuk-input-sublabel {
+    margin-bottom: 10px;
+    font-size: 0.8rem;
 }
 </style>
