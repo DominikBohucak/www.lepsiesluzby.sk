@@ -10,6 +10,7 @@ const home = () => import("./views/home.vue");
 const podnet = () => import("./views/podnet.vue");
 const success = () => import("./views/success.vue");
 const error = () => import("./views/error.vue");
+const jiraRedirect = () => import("./views/jiraRedirect.vue");
 
 
 export default new Router({
@@ -39,6 +40,13 @@ export default new Router({
             name: "error",
             component: error,
             props: true
+        },
+        {
+            path: "/jira/browse/:id",
+            component: jiraRedirect,
+            beforeEnter(to, from, next) {
+                window.location.href = "https://lepsiesluzby.atlassian.net/browse/" + to.params.id;
+            }
         },
     ],
 });

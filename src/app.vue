@@ -40,7 +40,7 @@ export default {
                     },
                     {
                         href:
-                            "https://lepsiesluzby.sk/jira/secure/Dashboard.jspa?selectPageId=10100",
+                            "https://lepsiesluzby.atlassian.net/jira/dashboards/10001",
                         text: "Zadané podnety",
                     },
                 ],

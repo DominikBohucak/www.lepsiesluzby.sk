@@ -95,25 +95,20 @@ export default {
     },
     methods: {
         getJiraData: async function () {
-            const searchURL = "https://lepsiesluzby.sk/jira/rest/api/2/search";
+            const searchURL = "https://api.lepsiesluzby.sk/issue/search";
             const config = {
-                headers: {
-                    "X-LepsieSluzby-Anonymous": true,
-                },
                 params: {
                     jql:
                         "project = SDM  AND component = e-services AND status != New ORDER BY created DESC",
-                    fields: "summary,created,customfield_10204",
+                    fields: "summary,created,customfield_10038",
                     maxResults: "5",
                 },
             };
-            const response = await this.axios.get(searchURL, config);
-
-            return response;
+            return await this.axios.get(searchURL, config);
         },
         openJira: function () {
             window.open(
-                "https://lepsiesluzby.sk/jira/secure/Dashboard.jspa?selectPageId=10100",
+                "https://lepsiesluzby.atlassian.net/jira/dashboards/10001",
                 "_blank"
             );
         },

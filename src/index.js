@@ -12,7 +12,7 @@ Vue.use(VueAxios, axios);
 
 import { VueReCaptcha } from "vue-recaptcha-v3";
 Vue.use(VueReCaptcha, {
-    siteKey: "6LdPeM0UAAAAAJGO5mLQ_ESlssA5zC9K3eNotUeQ",
+    siteKey: "6Lf14KYlAAAAAFkC-LYuM_vezETIlDNxSSf6Gv7D",
     autoHideBadge: true,
 });
 
